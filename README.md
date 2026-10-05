@@ -39,15 +39,17 @@ The project must be willing to conclude that the thesis is wrong, partly wrong, 
 ## Repository structure
 
 ```text
-AGENTS.md                     Agent operating rules
-README.md                     Project overview
-docs/THESIS.md                Formal thesis and causal model
-docs/METHODOLOGY.md           Evidence, scoring, falsification rules
-data/claims.csv               Canonical claim registry
-data/evidence.csv             Evidence ledger
-scripts/score_thesis.py       Deterministic claim/thesis scoring
-scripts/collect_public_metrics.py  Public-data snapshot collector
-reports/BASELINE-2026-10-05.md     Initial evidence baseline
+AGENTS.md                         Agent operating rules
+README.md                         Project overview
+docs/THESIS.md                    Formal thesis and causal model
+docs/METHODOLOGY.md               Evidence, scoring, falsification rules
+data/claims.csv                   Canonical claim registry
+data/evidence.csv                 Evidence ledger
+data/predictions.csv              Preregistered prediction registry
+scripts/score_thesis.py           Deterministic claim/thesis scoring
+scripts/collect_public_metrics.py Public-data snapshot collector
+reports/BASELINE-2026-10-05.md    Initial evidence baseline
+reports/latest-score.md           Current deterministic score
 .github/workflows/thesis-monitor.yml Scheduled + manual monitoring
 ```
 
@@ -55,9 +57,10 @@ reports/BASELINE-2026-10-05.md     Initial evidence baseline
 
 The project begins from a deliberately mixed state:
 
-- Ripple reports RLUSD circulating supply above $2.4B as of 2026-09-24.
-- Dubai Land Department real-estate tokenization uses XRPL infrastructure with Ripple custody supporting a project partner.
-- The SEC/Ripple appellate litigation was dismissed in August 2025, while the underlying court distinctions around institutional sales remain relevant.
+- Ripple reports RLUSD circulating supply of **$2.5098B as of 2026-10-01**.
+- Dubai Land Department real-estate tokenization uses XRPL infrastructure, and Phase Two added controlled secondary-market functionality.
+- Dubai Land Department also states that pilot investor transactions are conducted in UAE dirhams with no use of cryptocurrencies — evidence that XRPL adoption does not automatically create XRP demand.
+- The SEC/Ripple appellate litigation was dismissed in August 2025, while the district-court final judgment remains in effect.
 - The U.S. Senate failed to invoke cloture on the CLARITY Act motion to proceed on 2026-09-15 by 49–50; a motion to reconsider was entered.
 - These developments support parts of the infrastructure/adoption thesis, but **none alone proves sustained XRP demand or any price target**.
 
@@ -70,4 +73,4 @@ python scripts/score_thesis.py
 python scripts/collect_public_metrics.py
 ```
 
-The monitor is designed to continue gathering evidence while preserving the distinction between adoption and XRP-specific value capture.
+The scheduled monitor gathers raw public telemetry and rescoring data. Evidence affecting the thesis still requires source-grounded classification under `docs/METHODOLOGY.md`.
