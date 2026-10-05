@@ -39,38 +39,64 @@ The project must be willing to conclude that the thesis is wrong, partly wrong, 
 ## Repository structure
 
 ```text
-AGENTS.md                         Agent operating rules
-README.md                         Project overview
-docs/THESIS.md                    Formal thesis and causal model
-docs/METHODOLOGY.md               Evidence, scoring, falsification rules
-data/claims.csv                   Canonical claim registry
-data/evidence.csv                 Evidence ledger
-data/predictions.csv              Preregistered prediction registry
-scripts/score_thesis.py           Deterministic claim/thesis scoring
-scripts/collect_public_metrics.py Public-data snapshot collector
-reports/BASELINE-2026-10-05.md    Initial evidence baseline
-reports/latest-score.md           Current deterministic score
-.github/workflows/thesis-monitor.yml Scheduled + manual monitoring
+AGENTS.md                              Agent operating rules
+README.md                              Project overview
+docs/THESIS.md                         Formal thesis and causal model
+docs/METHODOLOGY.md                    Evidence, scoring, falsification rules
+docs/SCHEMA.md                         Canonical research-state integrity rules
+data/claims.csv                        Canonical claim registry
+data/evidence.csv                      Evidence ledger
+data/predictions.csv                   Preregistered prediction registry
+scripts/score_thesis.py                Validation + deterministic claim/thesis scoring
+scripts/collect_public_metrics.py      Public-data snapshot collector
+tests/test_score_thesis.py             Research-state/scoring regression tests
+reports/BASELINE-2026-10-05.md         Initial evidence baseline
+reports/PRIMARY-STATUS-2026-10-05.md   Reviewed primary integration status
+reports/latest-score.md                Generated deterministic score telemetry
+.github/workflows/research-integrity.yml PR/main integrity CI
+.github/workflows/thesis-monitor.yml   Scheduled + manual monitoring
 ```
 
-## Current baseline
+Research workstreams live under `research/`. The reviewed primary report preserves integrated interpretation; `reports/latest-score.md` is deliberately reproducible generated telemetry.
 
-The project begins from a deliberately mixed state:
+## Current state
 
-- Ripple reports RLUSD circulating supply of **$2.5098B as of 2026-10-01**.
-- Dubai Land Department real-estate tokenization uses XRPL infrastructure, and Phase Two added controlled secondary-market functionality.
-- Dubai Land Department also states that pilot investor transactions are conducted in UAE dirhams with no use of cryptocurrencies — evidence that XRPL adoption does not automatically create XRP demand.
-- The SEC/Ripple appellate litigation was dismissed in August 2025, while the district-court final judgment remains in effect.
-- The U.S. Senate failed to invoke cloture on the CLARITY Act motion to proceed on 2026-09-15 by 49–50; a motion to reconsider was entered.
-- These developments support parts of the infrastructure/adoption thesis, but **none alone proves sustained XRP demand or any price target**.
+The current accepted classification is deliberately constrained:
 
-See `reports/BASELINE-2026-10-05.md` for sources and initial interpretation.
+**Mixed / insufficient — adoption evidence does not yet establish all gating links.**
+
+Current gate telemetry:
+
+- **H1 — Bridge-asset utility: +2.00.** XRP bridging is mechanically real and historically measurable from validated XRPL metadata, but material production route share has not yet been measured.
+- **H3 — XRP-specific value capture: +2.40.** SEC-filed regulated spot products provide direct XRP-specific institutional-inventory evidence, while current Ripple Payments architecture can also settle through fiat/stablecoins without structurally requiring XRP.
+- **H8 — Valuation/liquidity mechanics: +0.00.** The first empirical liquidity baseline exists, but a dynamic market-depth/effective-float model is not yet validated.
+
+Positive H2/H7 adoption evidence cannot substitute for unresolved gates. See `reports/PRIMARY-STATUS-2026-10-05.md` for the current integrated interpretation and `reports/latest-score.md` for deterministic score telemetry.
 
 ## Running locally
 
+Regenerate the deterministic score after a valid research-state change:
+
 ```bash
 python scripts/score_thesis.py
+```
+
+Verify that the committed generated report exactly matches the canonical datasets:
+
+```bash
+python scripts/score_thesis.py --check
+```
+
+Run integrity/scoring tests:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Collect raw public telemetry:
+
+```bash
 python scripts/collect_public_metrics.py
 ```
 
-The scheduled monitor gathers raw public telemetry and rescoring data. Evidence affecting the thesis still requires source-grounded classification under `docs/METHODOLOGY.md`.
+The scheduled monitor runs tests and state validation before collecting or committing telemetry. Raw telemetry does not automatically become thesis evidence; evidence affecting the thesis still requires source-grounded classification under `AGENTS.md`, `docs/METHODOLOGY.md`, and `docs/SCHEMA.md`.
