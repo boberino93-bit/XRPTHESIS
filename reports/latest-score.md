@@ -1,6 +1,6 @@
 # XRP Thesis — Latest Deterministic Score
 
-Generated: 2026-10-05T12:06:43+00:00
+Evidence cutoff: 2026-10-05
 
 **Classification:** Mixed / insufficient — adoption evidence does not yet establish all gating links
 
@@ -19,18 +19,11 @@ Generated: 2026-10-05T12:06:43+00:00
 
 ## Interpretation guardrail
 
-H1 has modest mechanism-level support because official XRPL documentation confirms that XRP can be used as an intermediary when it offers the cheaper executable route. This does not establish that material current payment value is actually routed through XRP.
-
-H3 is now positive because SEC-filed spot-product holdings provide direct evidence of XRP-specific institutional inventory. That evidence is materially stronger than generic XRPL adoption, but it does **not** prove that Ripple, RLUSD, tokenization, or payment growth caused the demand. Investment-product inventory and bridge/payment utility remain separate mechanisms.
-
-A positive H2/H7 score still means evidence of XRPL/institutional/RWA adoption is accumulating. It does **not** prove H3 by itself.
+A positive H2/H7 score means evidence of XRPL/institutional/RWA adoption is accumulating. It does **not** prove H3. H3 must be supported by XRP-specific demand/liquidity evidence.
 
 ## Strongest evidence against the thesis
 
-Three observations currently constrain the strongest XRP-value-capture interpretation:
+This section is generated deterministically from explicit `contradict` rows, with gating claims ranked first. It preserves source-grounded contrary evidence in automated reports.
 
-1. The Dubai DLD project demonstrates that economically real XRPL adoption can be structured around fiat-facing investor transactions without requiring users to transact in cryptocurrency.
-2. Ripple's current Ripple Payments architecture explicitly supports fiat/stablecoin settlement and states that the settlement layer is decoupled from any single issuer's token.
-3. Grayscale XRP Trust ETF holdings fell from about 122.2M XRP at 2025-12-31 to 55.0M XRP at 2026-06-30 even while aggregate holdings across four reviewed U.S. spot products increased, showing that institutional-product demand is heterogeneous rather than one-way.
-
-None of these observations proves XRP usage or demand is absent. Together they show why the thesis must keep separating ecosystem adoption, XRP-specific inventory demand, and actual bridge/settlement utility. Route-level production volume, liquidity-depth data, and continued product-flow telemetry remain necessary before H3 can be treated as broadly established.
+- **E0011 — H3 gate (-1.20 weighted):** Ripple's current Ripple Payments page states that cross-border settlement can occur in fiat or stablecoins and that the settlement layer is decoupled from any single issuer's token, with additional stablecoins added as market demand develops. **Interpretation:** Ripple Payments can grow without structurally requiring XRP, so aggregate Ripple Payments volume is not valid evidence of XRP-specific value capture unless XRP routing or inventory is separately demonstrated. **Source:** https://ripple.com/products/cross-border-payments/
+- **E0002 — H4 (-3.00 weighted):** The U.S. Senate rejected cloture on the motion to proceed to H.R. 3633 (CLARITY Act) by 49-50; 60 votes were required. **Interpretation:** The expected U.S. legislative catalyst was delayed. This weakens near-term timing assumptions but does not yet falsify the broader regulatory thesis. **Source:** https://www.senate.gov/legislative/LIS/roll_call_votes/vote1192/vote_119_2_00234.htm
