@@ -1,0 +1,17 @@
+{
+  "schema": "org-agent-mesh/master-handoff/v1",
+  "project_id": "xrp-thesis",
+  "generation": 0,
+  "updated_at_utc": "2026-10-05T14:31:00Z",
+  "updated_by": {"agent_id": "swarm-registry-integration", "agent_instance_id": "swarm-registry-integration-20261005", "role": "PRIMARY", "execution_mode": "RECOVERY"},
+  "authority": {"canonical_coordination": "boberino93-bit/XRPTHESIS", "master_handoff_authority": "GITHUB_REPOSITORY", "repository_mirror_role": "CANONICAL"},
+  "current_objective": "Test and falsify the XRP thesis using source-grounded evidence while keeping Ripple, XRPL, RLUSD, and XRP-specific value capture distinct.",
+  "source_state": {"repository": "boberino93-bit/XRPTHESIS", "revision": null, "release": null, "package_set": null},
+  "active_agents": [],
+  "expired_agents": [],
+  "workstreams": [{"id": "thesis-testing", "status": "ACTIVE", "summary": "Maintain evidence, scoring, falsification, adoption, liquidity, regulatory, and value-capture analysis under AGENTS.md and docs/METHODOLOGY.md."}],
+  "blockers": [],
+  "pending_actions": [],
+  "recent_refs": ["AGENTS.md", "AUTHORITY_SECURITY_OVERLAY.json", "SWARM_OPERATIONS_OBSERVABILITY.json", "docs/THESIS.md", "docs/METHODOLOGY.md"],
+  "latest_checkpoints": []
+}
