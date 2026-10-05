@@ -26,11 +26,20 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Run research-state tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate committed research state
+        run: python scripts/score_thesis.py --check
+
       - name: Collect public metrics
         run: python scripts/collect_public_metrics.py
 
       - name: Recompute thesis score
         run: python scripts/score_thesis.py
+
+      - name: Validate generated research state
+        run: python scripts/score_thesis.py --check
 
       - name: Commit monitoring snapshot
         shell: bash
