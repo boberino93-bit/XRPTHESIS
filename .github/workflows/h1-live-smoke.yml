@@ -1,0 +1,97 @@
+name: H1 Live XRPL Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      ledger_count:
+        description: Number of recent validated ledgers to scan
+        required: false
+        default: "20"
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/measure_h1_bridge_utility.py
+      - .github/workflows/h1-live-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve recent validated ledger range
+        id: range
+        env:
+          LEDGER_COUNT: ${{ github.event.inputs.ledger_count || '20' }}
+        run: |
+          python - <<'PY'
+          import os
+          import sys
+
+          sys.path.insert(0, "scripts")
+          import measure_h1_bridge_utility as h1
+
+          count = int(os.environ["LEDGER_COUNT"])
+          if count < 1 or count > 200:
+              raise SystemExit("ledger_count must be between 1 and 200")
+
+          data = h1.request_with_fallback(
+              h1.DEFAULT_ENDPOINTS,
+              {
+                  "method": "ledger",
+                  "params": [
+                      {
+                          "ledger_index": "validated",
+                          "transactions": False,
+                          "expand": False,
+                          "binary": False,
+                          "api_version": 2,
+                      }
+                  ],
+              },
+          )
+          result = data["result"]
+          ledger = result.get("ledger", result)
+          end = int(ledger.get("ledger_index", result.get("ledger_index")))
+          start = max(1, end - count + 1)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"start={start}\n")
+              out.write(f"end={end}\n")
+          print(f"Validated smoke range: {start}-{end} ({count} ledgers requested)")
+          PY
+
+      - name: Run live H1 collector smoke scan
+        run: |
+          mkdir -p /tmp/h1-smoke
+          python scripts/measure_h1_bridge_utility.py \
+            --start-ledger "${{ steps.range.outputs.start }}" \
+            --end-ledger "${{ steps.range.outputs.end }}" \
+            --out-prefix /tmp/h1-smoke/recent \
+            --sleep 0
+
+      - name: Print smoke summary
+        run: cat /tmp/h1-smoke/recent-summary.json
+
+      - name: Upload smoke outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: h1-live-smoke-${{ github.run_id }}
+          path: |
+            /tmp/h1-smoke/recent.jsonl
+            /tmp/h1-smoke/recent.csv
+            /tmp/h1-smoke/recent-summary.json
+            /tmp/h1-smoke/recent.checkpoint.json
+          if-no-files-found: error
+          retention-days: 14
