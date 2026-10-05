@@ -19,8 +19,18 @@ Generated: 2026-10-05T12:06:43+00:00
 
 ## Interpretation guardrail
 
-A positive H2/H7 score means evidence of XRPL/institutional/RWA adoption is accumulating. It does **not** prove H3. H3 must be supported by XRP-specific demand/liquidity evidence.
+H1 has modest mechanism-level support because official XRPL documentation confirms that XRP can be used as an intermediary when it offers the cheaper executable route. This does not establish that material current payment value is actually routed through XRP.
+
+H3 is now positive because SEC-filed spot-product holdings provide direct evidence of XRP-specific institutional inventory. That evidence is materially stronger than generic XRPL adoption, but it does **not** prove that Ripple, RLUSD, tokenization, or payment growth caused the demand. Investment-product inventory and bridge/payment utility remain separate mechanisms.
+
+A positive H2/H7 score still means evidence of XRPL/institutional/RWA adoption is accumulating. It does **not** prove H3 by itself.
 
 ## Strongest evidence against the thesis
 
-This section is intentionally mandatory in every generated report. Automated scoring cannot decide which contrary fact is economically strongest; reviewers should inspect contradictory and H3-neutral evidence in `data/evidence.csv`.
+Three observations currently constrain the strongest XRP-value-capture interpretation:
+
+1. The Dubai DLD project demonstrates that economically real XRPL adoption can be structured around fiat-facing investor transactions without requiring users to transact in cryptocurrency.
+2. Ripple's current Ripple Payments architecture explicitly supports fiat/stablecoin settlement and states that the settlement layer is decoupled from any single issuer's token.
+3. Grayscale XRP Trust ETF holdings fell from about 122.2M XRP at 2025-12-31 to 55.0M XRP at 2026-06-30 even while aggregate holdings across four reviewed U.S. spot products increased, showing that institutional-product demand is heterogeneous rather than one-way.
+
+None of these observations proves XRP usage or demand is absent. Together they show why the thesis must keep separating ecosystem adoption, XRP-specific inventory demand, and actual bridge/settlement utility. Route-level production volume, liquidity-depth data, and continued product-flow telemetry remain necessary before H3 can be treated as broadly established.
