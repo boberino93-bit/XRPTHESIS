@@ -6,14 +6,15 @@ This is research telemetry, not a probability model or trading signal.
 
 from __future__ import annotations
 
-import csv
 from collections import defaultdict
-from datetime import datetime, timezone
 from pathlib import Path
+
+from validate_data import load_csv, validate_all
 
 ROOT = Path(__file__).resolve().parents[1]
 CLAIMS = ROOT / "data" / "claims.csv"
 EVIDENCE = ROOT / "data" / "evidence.csv"
+PREDICTIONS = ROOT / "data" / "predictions.csv"
 REPORT = ROOT / "reports" / "latest-score.md"
 
 QUALITY = {"A": 1.00, "B": 0.80, "C": 0.60, "D": 0.25}
@@ -25,13 +26,16 @@ def clamp(value: float, lo: float = -10.0, hi: float = 10.0) -> float:
     return max(lo, min(hi, value))
 
 
-def load_csv(path: Path) -> list[dict[str, str]]:
-    with path.open("r", encoding="utf-8", newline="") as f:
-        return list(csv.DictReader(f))
+def evidence_contribution(row: dict[str, str]) -> float:
+    direction = row["direction"].strip().lower()
+    quality = row["quality"].strip().upper()
+    status = row["status"].strip().lower()
+    weight = float(row["weight"])
+    return weight * DIRECTION[direction] * QUALITY[quality] * STATUS[status]
 
 
-def classify(scores: dict[str, float], gates: list[str]) -> str:
-    gate_scores = [scores.get(g, 0.0) for g in gates]
+def classify(scores: dict[str, float], gates: set[str]) -> str:
+    gate_scores = [scores.get(gate, 0.0) for gate in sorted(gates)]
     avg = sum(scores.values()) / len(scores) if scores else 0.0
 
     if any(score <= -5.0 for score in gate_scores):
@@ -45,82 +49,173 @@ def classify(scores: dict[str, float], gates: list[str]) -> str:
     return "Mixed / insufficient — adoption evidence does not yet establish all gating links"
 
 
-def main() -> None:
-    claims = load_csv(CLAIMS)
-    evidence = load_csv(EVIDENCE)
-
+def score_claims(
+    claims: list[dict[str, str]], evidence: list[dict[str, str]]
+) -> tuple[dict[str, float], dict[str, dict[str, int]]]:
     raw = defaultdict(float)
-    support_count = defaultdict(int)
-    contradict_count = defaultdict(int)
-    neutral_count = defaultdict(int)
+    counts = {
+        "support": defaultdict(int),
+        "contradict": defaultdict(int),
+        "neutral": defaultdict(int),
+    }
 
     for row in evidence:
         claim_id = row["claim_id"].strip()
         direction = row["direction"].strip().lower()
-        quality = row["quality"].strip().upper()
-        status = row["status"].strip().lower()
-        weight = float(row["weight"])
+        raw[claim_id] += evidence_contribution(row)
+        counts[direction][claim_id] += 1
 
-        if direction not in DIRECTION:
-            raise ValueError(f"Unknown direction {direction!r} in {row['evidence_id']}")
-        if quality not in QUALITY:
-            raise ValueError(f"Unknown quality {quality!r} in {row['evidence_id']}")
-        if status not in STATUS:
-            raise ValueError(f"Unknown status {status!r} in {row['evidence_id']}")
+    scores = {
+        row["claim_id"].strip(): clamp(raw[row["claim_id"].strip()])
+        for row in claims
+    }
+    return scores, counts
 
-        raw[claim_id] += weight * DIRECTION[direction] * QUALITY[quality] * STATUS[status]
-        if direction == "support":
-            support_count[claim_id] += 1
-        elif direction == "contradict":
-            contradict_count[claim_id] += 1
+
+def evidence_strength(row: dict[str, str]) -> float:
+    return (
+        float(row["weight"])
+        * QUALITY[row["quality"].strip().upper()]
+        * STATUS[row["status"].strip().lower()]
+    )
+
+
+def strongest_adverse_evidence(
+    evidence: list[dict[str, str]], gates: set[str]
+) -> dict[str, str] | None:
+    """Return the most decision-relevant adverse observation.
+
+    Gate contradictions rank highest. Gate-neutral evidence is next because a
+    thesis gate remaining unproven can be more important than a contradiction
+    to a non-gating supporting hypothesis. Non-gate contradictions follow.
+    Within each class, confirmed evidence and source-adjusted strength decide.
+    """
+
+    candidates: list[tuple[tuple[int, int, float, str], dict[str, str]]] = []
+    for row in evidence:
+        claim_id = row["claim_id"].strip()
+        direction = row["direction"].strip().lower()
+        is_gate = claim_id in gates
+
+        if direction == "contradict":
+            adverse_class = 3 if is_gate else 1
+        elif direction == "neutral" and is_gate:
+            adverse_class = 2
         else:
-            neutral_count[claim_id] += 1
+            continue
 
-    scores = {row["claim_id"]: clamp(raw[row["claim_id"]]) for row in claims}
-    gates = [row["claim_id"] for row in claims if row["gate"].strip().lower() == "true"]
+        candidates.append(
+            (
+                (
+                    adverse_class,
+                    1 if row["status"].strip().lower() == "confirmed" else 0,
+                    evidence_strength(row),
+                    row["evidence_id"].strip(),
+                ),
+                row,
+            )
+        )
+
+    if not candidates:
+        return None
+
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    return candidates[0][1]
+
+
+def build_report(
+    claims: list[dict[str, str]],
+    evidence: list[dict[str, str]],
+    scores: dict[str, float],
+    counts: dict[str, dict[str, int]],
+    gates: set[str],
+) -> str:
     classification = classify(scores, gates)
+    strongest_adverse = strongest_adverse_evidence(evidence, gates)
+    ledger_through = max(
+        (row["observed_date"].strip() for row in evidence), default="n/a"
+    )
 
     lines = [
         "# XRP Thesis — Latest Deterministic Score",
         "",
-        f"Generated: {datetime.now(timezone.utc).isoformat(timespec='seconds')}",
+        f"Ledger through: {ledger_through}",
         "",
         f"**Classification:** {classification}",
         "",
-        "> Scores summarize the evidence ledger. They are not probabilities, price forecasts, or trade signals.",
+        "> Scores summarize the committed evidence ledger. They are not probabilities, price forecasts, or trade signals.",
+        "",
+        f"Evidence rows: {len(evidence)}",
         "",
         "| Claim | Gate | Score | Support | Contradict | Neutral |",
         "|---|:---:|---:|---:|---:|---:|",
     ]
 
     for row in claims:
-        cid = row["claim_id"]
-        gate = "YES" if row["gate"].strip().lower() == "true" else ""
+        claim_id = row["claim_id"].strip()
+        gate = "YES" if claim_id in gates else ""
         lines.append(
-            f"| {cid} — {row['title']} | {gate} | {scores[cid]:+.2f} | "
-            f"{support_count[cid]} | {contradict_count[cid]} | {neutral_count[cid]} |"
+            f"| {claim_id} — {row['title']} | {gate} | {scores[claim_id]:+.2f} | "
+            f"{counts['support'][claim_id]} | {counts['contradict'][claim_id]} | "
+            f"{counts['neutral'][claim_id]} |"
         )
 
-    lines.extend([
-        "",
-        "## Interpretation guardrail",
-        "",
-        "A positive H2/H7 score means evidence of XRPL/institutional/RWA adoption is accumulating. "
-        "It does **not** prove H3. H3 must be supported by XRP-specific demand/liquidity evidence.",
-        "",
-        "## Strongest evidence against the thesis",
-        "",
-        "This section is intentionally mandatory in every generated report. Automated scoring cannot decide "
-        "which contrary fact is economically strongest; reviewers should inspect contradictory and H3-neutral evidence in `data/evidence.csv`.",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Interpretation guardrail",
+            "",
+            "A positive H2/H7 score means evidence of XRPL/institutional/RWA adoption is accumulating. "
+            "It does **not** prove H3. H3 must be supported by XRP-specific demand/liquidity evidence.",
+            "",
+            "## Strongest evidence against the thesis",
+            "",
+        ]
+    )
+
+    if strongest_adverse is None:
+        lines.extend(
+            [
+                "No contradictory or gate-neutral evidence is currently recorded. "
+                "That is a data-state observation, not evidence that the thesis is correct.",
+                "",
+            ]
+        )
+    else:
+        direction = strongest_adverse["direction"].strip().lower()
+        lines.extend(
+            [
+                f"**{strongest_adverse['evidence_id']} — {strongest_adverse['claim_id']} "
+                f"({direction}, quality {strongest_adverse['quality']}, weight {strongest_adverse['weight']})**",
+                "",
+                strongest_adverse["fact"].strip(),
+                "",
+                f"Interpretation: {strongest_adverse['interpretation'].strip()}",
+                "",
+                f"Source: {strongest_adverse['source'].strip()}",
+                "",
+            ]
+        )
+
+    return "\n".join(lines)
+
+
+def main() -> None:
+    claims = load_csv(CLAIMS)
+    evidence = load_csv(EVIDENCE)
+    predictions = load_csv(PREDICTIONS)
+    _, gates = validate_all(claims, evidence, predictions)
+
+    scores, counts = score_claims(claims, evidence)
+    report = build_report(claims, evidence, scores, counts, gates)
+    classification = classify(scores, gates)
 
     REPORT.parent.mkdir(parents=True, exist_ok=True)
-    REPORT.write_text("\n".join(lines), encoding="utf-8")
+    REPORT.write_text(report, encoding="utf-8")
     print(f"Wrote {REPORT}")
     print(classification)
-    for cid in sorted(scores):
-        print(f"{cid}: {scores[cid]:+.2f}")
+    for claim_id in sorted(scores):
+        print(f"{claim_id}: {scores[claim_id]:+.2f}")
 
 
 if __name__ == "__main__":
