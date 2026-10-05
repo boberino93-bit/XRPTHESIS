@@ -26,6 +26,15 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Compile Python sources and tests
+        run: python -m py_compile scripts/*.py tests/*.py
+
+      - name: Run research integrity tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Validate committed research state
+        run: python scripts/score_thesis.py --check
+
       - name: Collect public metrics
         run: python scripts/collect_public_metrics.py
 
