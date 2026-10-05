@@ -23,6 +23,16 @@ The following rules are non-optional for every agent, including researchers, man
 11. No agent may create, modify, answer, or satisfy its own authentication proof or challenge.
 12. If authentication or authorization is missing, stale, replayed, or out of scope, fail closed only on the affected mutation and continue safe read-only research when useful.
 
+## Project work holds and continuation — mandatory startup gate
+
+1. Resolve the current XRP project-work-control state from the canonical control plane before selecting or advancing work and recheck it between bounded work units.
+2. A valid project `HOLD` is not cancellation, failure, deletion, or stale liveness. Preserve useful partial state, checkpoint the current cursor, and stop XRP project work until the governed resume condition is satisfied.
+3. While XRP is held, do not begin new XRP research, claims, respawns, recovery work, or durable mutations except minimal integrity-preserving handoff required by the hold protocol.
+4. A manual hold remains blocked after its expiry until an authenticated human issues the governed resume. Automatic expiry resumes only when the hold order explicitly selected `AUTO_AT_EXPIRY`.
+5. Ordinary user control-message interruptions do not cancel the active assignment. Answer the interruption, preserve the execution cursor, and resume automatically.
+6. If a particular branch requires human input, block only that branch and continue other safe independent XRP work when useful work exists.
+7. Explicit human `HOLD`, `STOP`, `PAUSE`, `CANCEL`, authority revocation, or material redirect overrides automatic continuation for the affected scope.
+
 ## Required behavior
 
 1. Read `docs/THESIS.md` and `docs/METHODOLOGY.md` before changing thesis state.
