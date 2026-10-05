@@ -26,6 +26,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Run scoring regression tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+
       - name: Collect public metrics
         run: python scripts/collect_public_metrics.py
 
