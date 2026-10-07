@@ -12,6 +12,42 @@
   "fresh_agent_context": {"reference_path": "AGENT_CONTEXT_REFERENCE.md", "required_on_startup": true, "authority": "ORIENTATION_ONLY", "use_when_chat_context_missing": true, "must_not_invent_task": true, "current_human_instruction_overrides_likely_intent": true},
   "authorized_roles": ["primary", "manager", "research"],
   "execution_modes": ["recovery", "qa", "build"],
+  "project_directives": {
+    "xrp_thesis_value_capture_v1": {
+      "status": "ACTIVE",
+      "effective_date": "2026-10-07",
+      "classification": "EPISTEMIC_AND_FORECASTING_DIRECTIVE",
+      "purpose": "Separate evidence that Ripple/XRPL infrastructure is succeeding from evidence that economic value accrues specifically to XRP, and require forecasts to test that causal link rather than assume it.",
+      "working_thesis": "Ripple/XRPL has a credible path to becoming important infrastructure for tokenized institutional finance. XRP is well positioned to capture material value if it becomes a preferred neutral liquidity, collateral, routing, or settlement asset within that ecosystem; XRP-specific value capture remains a principal hypothesis requiring direct evidence rather than an automatic consequence of Ripple, XRPL, RLUSD, custody, tokenization, prime-brokerage, or regulatory success.",
+      "required_causal_chain": [
+        "tokenized_finance_and_institutional_onchain_adoption",
+        "Ripple_XRPL_infrastructure_adoption",
+        "measurable_XRP_specific_liquidity_collateral_routing_or_settlement_demand",
+        "durable_XRP_value_capture",
+        "valuation_and_price_implications"
+      ],
+      "requirements": [
+        "Evaluate each link in the causal chain independently and preserve uncertainty at every link.",
+        "Do not treat Ripple company success, XRPL usage, RLUSD growth, custody adoption, tokenized-asset issuance, prime-brokerage activity, ETF access, or regulatory clarity as sufficient proof of proportional XRP value accrual.",
+        "Seek direct evidence of XRP-specific demand, including routing share, liquidity depth, bridge usage, collateral use, settlement use, institutional holdings where evidenced, market-structure effects, and displacement or substitution by stablecoins, fiat rails, other digital assets, or permissioned systems.",
+        "Model reflexive liquidity effects as a hypothesis: deeper XRP liquidity may improve routing economics and thereby attract additional usage, but this feedback loop must be demonstrated empirically rather than presumed.",
+        "Preserve and actively test counter-hypotheses in which Ripple and XRPL succeed while XRP captures limited, delayed, or non-proportional economic value.",
+        "Treat macro liquidity, yen-carry dynamics, dollar strength, rates, oil, risk appetite, and related regime variables as contextual drivers rather than uniquely bullish XRP catalysts.",
+        "Separate adoption forecasts from valuation forecasts. Extreme price targets require correspondingly strong evidence of systemic XRP liquidity, collateral, settlement, or store-of-value demand and must not be inferred from ecosystem growth alone.",
+        "Express forward price and timing conclusions probabilistically or by scenario unless the requested task explicitly requires another format; include assumptions, horizon, information cutoff, disconfirming evidence, and confidence.",
+        "Update confidence when new evidence arrives. Negative, contradictory, or null evidence must be preserved and may reduce confidence in any part of the thesis.",
+        "The project objective is to determine whether the thesis is true and under what conditions, not to defend the user's prior belief or optimize for bullish conclusions."
+      ],
+      "current_interpretation": {
+        "infrastructure_and_adoption_layer": "INCREASINGLY_SUPPORTED",
+        "XRP_specific_value_capture_layer": "PLAUSIBLE_BUT_NOT_YET_PROVEN",
+        "dominant_neutral_global_bridge_asset_outcome": "OPEN_HYPOTHESIS",
+        "aggressive_short_horizon_price_targets": "REQUIRE_EXTRAORDINARY_EVIDENCE"
+      },
+      "promotion_rule": "No thesis component may be promoted from hypothesis to established project fact solely because adjacent ecosystem components succeed; promotion requires evidence specific to the claimed mechanism.",
+      "anti_confirmation_bias_rule": "Researchers and forecasting agents must search for falsifiers and viable substitution paths with the same seriousness as confirming evidence."
+    }
+  },
   "central_registry": {"repository": "boberino93-bit/intercommunicationsenhancements", "path": "PROJECT_ROLE_ROUTING_REGISTRY.json"},
   "authority_security_overlay": {"path": "AUTHORITY_SECURITY_OVERLAY.json", "required_on_startup": true, "canonical_repository": "boberino93-bit/intercommunicationsenhancements", "canonical_revision": "5e423eb92aa1e6552f6f7eb13436fb129a1218d0", "principal_claim_required": true, "single_use_case_required": true, "static_personal_fact_authentication": "DENY", "prior_authorization_reuse": false, "high_consequence_independent_external_proof_required": true},
   "project_work_control": {"canonical_repository": "boberino93-bit/intercommunicationsenhancements", "policy_path": "governance/PROJECT_WORK_CONTROL.json", "protocol_path": "protocols/project_work_holds.md", "event_schema_path": "schemas/project_work_control_event.schema.json", "runtime_module": "org_agent_mesh.project_work_control", "required_on_startup": true, "required_between_bounded_units": true, "hold_is_cancellation": false, "hold_blocks_bound_project_work": true, "manual_expiry_requires_authenticated_resume": true},
