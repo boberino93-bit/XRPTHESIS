@@ -1,0 +1,12 @@
+{
+  "schema":"org-agent-mesh/project-glance/v1",
+  "project_id":"xrp-thesis",
+  "repository":"boberino93-bit/XRPTHESIS",
+  "observed_at_utc":"2026-10-07T13:10:00Z",
+  "status":"UNKNOWN",
+  "current_focus":"Falsifiable XRP/Ripple/XRPL/RLUSD thesis research with explicit separation of ecosystem growth from XRP-specific value capture.",
+  "blockers":["Current project HOLD state and live worker state must be checked from canonical project state before claiming execution.","Mesh normalization remains pending in the observability hook."],
+  "next_action":"On the next admitted XRP research/manager run, resolve HOLD state, current handoff and live evidence, then refresh this snapshot.",
+  "last_material_change":"Internal scheduler binding and observability integration are present; no current thesis-direction claim is inferred from repository metadata alone.",
+  "evidence_refs":["AGENT_CONTEXT_REFERENCE.md","SWARM_OPERATIONS_OBSERVABILITY.json","bootstrap/INTERNAL_SCHEDULER_SERVICE.json"]
+}
